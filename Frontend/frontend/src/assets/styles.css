@@ -1,0 +1,91 @@
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.sidebar {
+  width: 250px;         
+  min-width: 250px;
+  max-width: 250px;
+  box-sizing: border-box;
+  overflow-x: hidden;   
+  padding: 10px;
+}
+.sidebar h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #333;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 5px;
+  box-sizing: border-box;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.sidebar li {
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
+
+.sidebar-link,
+.conf-link,
+.subpage-link {
+  display: flex;           
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: black;
+  text-decoration: none;
+  font-weight: 500;
+  box-sizing: border-box;
+  width: 100%;            
+  overflow-wrap: break-word;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-link:hover,
+.conf-link:hover,
+.subpage-link:hover {
+  background-color: #f2f2f2;
+  cursor: pointer;
+}
+
+.sidebar-link::after,
+.conf-link::after,
+.subpage-link::after {
+  content: "→";
+  font-size: 14px;
+  color: #666;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+.conference-content {
+  width: 100%;
+  background-color: #f0f0f0;
+  min-height: calc(100vh - 48px); 
+  box-sizing: border-box;
+  padding: 40px 32px 32px 40px;   
+  overflow-y: auto;
+  flex: 1;
+  margin-left: 0;
+}
+.conference-content,
+.conference-page,
+.page-content {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}

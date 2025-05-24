@@ -1,85 +1,133 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+<script>
+import { useAuthStore } from './stores/auth'
+import ConferencesBar from './components/ConferencesBar.vue'
+import ConferenceBar from './components/ConferenceBar.vue'
+
+export default {
+  name: 'App',
+  components: {
+    ConferencesBar,
+    ConferenceBar,
+  },
+  data() {
+    return {
+      auth: useAuthStore()
+    }
+  },
+  computed: {
+    route() {
+      return this.$route
+    },
+    showSidebar() {
+      return this.$route.path !== '/login'
+    },
+    sidebarComponent() {
+      if (this.$route.path.startsWith('/conference/')) {
+        return 'ConferenceBar'
+      }
+      return 'ConferencesBar'
+    },
+    conferenceId() {
+      return this.$route.params.id || this.$route.params.confId || null
+    }
+  },
+  methods: {
+    logout() {
+      this.auth.logout()
+    }
+  }
+}
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <div>
+    <nav class="navbar" v-if="route.path !== '/login'">
+      <router-link to="/">Home</router-link>
+      <router-link to="/dashboard">Dashboard</router-link>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+      <div class="auth-area">
+        <template v-if="auth.user">
+          <span>Prihlásený ako: <strong>{{ auth.user.name }}</strong> ({{ auth.user.role }})</span>
+          <button @click="logout">Odhlásiť sa</button>
+        </template>
+        <template v-else>
+          <router-link to="/login">Prihlásiť sa</router-link>
+        </template>
+      </div>
+    </nav>
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
+    <div v-if="route.path === '/login'" class="login-page">
+      <router-view />
     </div>
-  </header>
 
-  <RouterView />
+    <div v-else class="main-layout">
+      <component :is="sidebarComponent" :conferenceId="conferenceId" />
+      <router-view />
+    </div>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
+<style>
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  background: #f0f0f0;
+  padding: 10px 10px;
+  gap: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  min-height: 48px;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+.navbar a {
+  color: black;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 15px;
+  font-weight: bold;
 }
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+.navbar a:hover {
+  text-decoration: underline;
 }
 
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+.auth-area {
+  margin-left: auto; 
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-right: 20px;
 }
 
-nav a:first-of-type {
-  border: 0;
+.auth-area button {
+  cursor: pointer;
+  padding: 5px 10px;
+  background-color: black;
+  border: none;
+  color: white;
+  border-radius: 3px;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+.auth-area button:hover {
+  background-color: rgba(0, 0, 0, 0.836);
+}
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+.main-layout {
+  display: flex;
+  height: calc(100vh - 48px);
+  background: white;
+  margin-top: 48px; 
+}
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+.login-page {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f4f4f4;
 }
 </style>
