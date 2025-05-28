@@ -1,40 +1,40 @@
-<script>
+<script setup>
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
-export default {
-  name: 'LoginForm',
-  data() {
-    return {
-      name: '',
-      password: '',  
-      role: '',       
-    }
-  },
-  created() {
-    this.router = useRouter()
-    this.auth = useAuthStore()
-  },
-  methods: {
-    onLogin() {
-      this.auth.login(this.name, this.role)
-      this.router.push('/')
-    }
+const router = useRouter()
+const auth = useAuthStore()
+
+const email = ref('')
+const password = ref('')
+const error = ref('')
+const loading = ref(false)
+
+async function onLogin() {
+  error.value = ''
+  loading.value = true
+  try {
+    // zavolať login
+    await auth.login(email.value, password.value)
+
+    // presmerovať po úspechu na dashboard
+    router.push('/dashboard')
+  } catch (e) {
+    error.value = e.response?.data?.message || 'Nesprávne prihlasovacie údaje alebo chyba servera.'
+  } finally {
+    loading.value = false
   }
+  console.log('Login kliknutý')
 }
 </script>
 
 <template>
   <form @submit.prevent="onLogin" class="login-form">
-    <input v-model="name" placeholder="Meno" required />
+    <input v-model="email" placeholder="Email" type="email" required />
     <input v-model="password" type="password" placeholder="Heslo" required />
-    <select v-model="role" required>
-      <option disabled value="">Vyber rolu</option>
-      <option value="admin">Admin</option>
-      <option value="editor">Editor</option>
-      <option value="anonym">Anonym</option>
-    </select>
-    <button type="submit">Prihlásiť sa</button>
+    <button type="submit" :disabled="loading">Prihlásiť sa</button>
+    <p v-if="error" style="color:red">{{ error }}</p>
   </form>
 </template>
 
@@ -49,8 +49,7 @@ export default {
   gap: 15px;
   width: 300px;
 }
-.login-form input,
-.login-form select {
+.login-form input {
   padding: 10px;
   font-size: 14px;
 }
