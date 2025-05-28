@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { fetchYears, createYear, deleteYear } from '../services/years'
 import { fetchSubpages, createSubpage, updateSubpage, deleteSubpage } from '../services/subpage'
+import { useConferenceStore } from '../stores/conferences'
 
 const years = ref([])
 const subpages = ref([])
@@ -9,6 +10,8 @@ const newYear = ref('')
 const pageTitles = ref({})
 const editPageId = ref(null)
 const editPageTitle = ref('')
+
+const conferenceStore = useConferenceStore()
 
 async function loadYears() {
   years.value = await fetchYears()
@@ -18,11 +21,17 @@ async function loadSubpages() {
   subpages.value = await fetchSubpages()
 }
 
+onMounted(() => {
+  loadYears()
+  loadSubpages()
+})
+
 async function addYear() {
   if (newYear.value) {
     await createYear(Number(newYear.value))
     newYear.value = ''
     await loadYears()
+    await conferenceStore.fetchConferences()
   }
 }
 
@@ -30,40 +39,47 @@ async function removeYear(id) {
   await deleteYear(id)
   await loadYears()
   await loadSubpages()
+  await conferenceStore.fetchConferences()
 }
 
+async function removePage(pageId) {
+  await deleteSubpage(pageId)
+  await loadSubpages()
+}
+
+// Pridanie podstránky
 async function addPage(yearId) {
   const title = pageTitles.value[yearId]
-  if (title) {
-    await createSubpage({ year_id: yearId, title, content: '' })
-    pageTitles.value[yearId] = ''
-    await loadSubpages()
-  }
+  if (!title) return
+  await createSubpage({ year_id: yearId, title })
+  pageTitles.value[yearId] = ''
+  await loadSubpages()
 }
 
+// Začiatok editácie podstránky
 function startEditPage(page) {
   editPageId.value = page.id
   editPageTitle.value = page.title
 }
 
+// Uloženie editovanej podstránky
 async function saveEditPage(page) {
-  if (editPageTitle.value) {
-    await updateSubpage(page.id, { year_id: page.year_id, title: editPageTitle.value, content: page.content })
-    editPageId.value = null
-    editPageTitle.value = ''
-    await loadSubpages()
-  }
-}
-
-async function removePage(id) {
-  await deleteSubpage(id)
+  if (!editPageTitle.value) return
+  await updateSubpage(page.id, {
+    year_id: page.year_id,
+    title: editPageTitle.value,
+    content: page.content ?? ''
+  })
+  editPageId.value = null
+  editPageTitle.value = ''
   await loadSubpages()
 }
 
-onMounted(async () => {
-  await loadYears()
-  await loadSubpages()
-})
+// Zrušenie editácie
+function cancelEditPage() {
+  editPageId.value = null
+  editPageTitle.value = ''
+}
 </script>
 
 <template>
@@ -88,7 +104,7 @@ onMounted(async () => {
             <template v-if="editPageId === page.id">
               <input v-model="editPageTitle" />
               <button @click="saveEditPage(page)">Uložiť</button>
-              <button @click="editPageId = null">Zrušiť</button>
+              <button @click="cancelEditPage">Zrušiť</button>
             </template>
             <template v-else>
               <span>{{ page.title }}</span>

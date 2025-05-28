@@ -12,7 +12,6 @@ export const useAuthStore = defineStore('auth', {
       this.token = response.data.token
       this.user = response.data.user
       if (this.token) {
-        api.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
         localStorage.setItem('token', this.token)
       }
       console.log('Login response:', response.data)
@@ -22,11 +21,9 @@ export const useAuthStore = defineStore('auth', {
       this.user = null
       this.token = null
       localStorage.removeItem('token')
-      delete api.defaults.headers.common['Authorization']
     },
     async fetchUser() {
       if (!this.token) return
-      api.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
       const response = await api.get('/user')
       this.user = response.data
     },
@@ -34,7 +31,6 @@ export const useAuthStore = defineStore('auth', {
       const token = localStorage.getItem('token')
       if (token) {
         this.token = token
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`
       }
     }
   },

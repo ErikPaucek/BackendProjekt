@@ -11,7 +11,7 @@ export const useConferenceStore = defineStore('conferences', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await api.get('/conferences') // uprav podľa svojho backend endpointu
+      const res = await api.get('/years') // OPRAVENÉ: správny endpoint
       conferences.value = res.data
     } catch (e: any) {
       error.value = e.response?.data?.message || 'Chyba pri načítaní konferencií'
@@ -19,8 +19,6 @@ export const useConferenceStore = defineStore('conferences', () => {
       loading.value = false
     }
   }
-
-  // Prípadne ďalšie metódy na pridávanie/úpravu/mazanie môžu volať API
 
   return { conferences, fetchConferences, loading, error }
 })
