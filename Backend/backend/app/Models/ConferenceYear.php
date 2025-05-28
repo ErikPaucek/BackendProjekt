@@ -3,7 +3,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Year extends Model
+class ConferenceYear extends Model
 {
     protected $table = 'years'; // explicitne definujeme názov tabuľky
 

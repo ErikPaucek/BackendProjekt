@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Subpage extends Model
 {
     protected $fillable = [
-        'conference_year_id',
+        'year_id',
         'title',
         'content',
     ];
@@ -15,7 +15,7 @@ class Subpage extends Model
     // Podstránka patrí konkrétnemu ročníku
     public function conferenceYear()
     {
-        return $this->belongsTo(Year::class, 'year_id');
+        return $this->belongsTo(ConferenceYear::class, 'year_id');
     }
 
     // Podstránka má prílohy
