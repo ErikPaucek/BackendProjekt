@@ -42,20 +42,21 @@ export default {
 
 <template>
   <div>
-        <nav class="navbar" v-if="route.path !== '/login'">
-      <router-link to="/">Home</router-link>
-      <router-link v-if="auth.user && auth.user.role === 'admin'" to="/dashboard">Dashboard</router-link>
-    
-      <div class="auth-area">
-        <template v-if="auth.user">
-          <span>Prihlásený ako: <strong>{{ auth.user.name }}</strong> ({{ auth.user.role }})</span>
-          <button @click="logout">Odhlásiť sa</button>
-        </template>
-        <template v-else>
-          <router-link to="/login">Prihlásiť sa</router-link>
-        </template>
-      </div>
-    </nav>
+            <nav class="navbar" v-if="route.path !== '/login'">
+          <router-link to="/">Home</router-link>
+          <router-link v-if="auth.user && auth.user.role === 'admin'" to="/dashboard">Dashboard</router-link>
+          <router-link v-if="auth.user && auth.user.role === 'editor'" to="/editordashboard">Editor Dashboard</router-link>
+        
+          <div class="auth-area">
+            <template v-if="auth.user">
+              <span>Prihlásený ako: <strong>{{ auth.user.name }}</strong> ({{ auth.user.role }})</span>
+              <button @click="logout">Odhlásiť sa</button>
+            </template>
+            <template v-else>
+              <router-link to="/login">Prihlásiť sa</router-link>
+            </template>
+          </div>
+        </nav>
 
     <div v-if="route.path === '/login'" class="login-page">
       <router-view />
