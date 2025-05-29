@@ -34,6 +34,7 @@ export default {
   methods: {
     logout() {
       this.auth.logout()
+      this.$router.push('/')
     }
   }
 }
@@ -61,7 +62,11 @@ export default {
     </div>
 
     <div v-else class="main-layout">
-      <component :is="sidebarComponent" :conferenceId="conferenceId" />
+      <component
+        v-if="route.path === '/'"
+        :is="sidebarComponent"
+        :conferenceId="conferenceId"
+      />
       <router-view />
     </div>
   </div>
