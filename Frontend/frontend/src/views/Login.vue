@@ -1,34 +1,3 @@
-<script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
-
-const router = useRouter()
-const auth = useAuthStore()
-
-const email = ref('')
-const password = ref('')
-const error = ref('')
-const loading = ref(false)
-
-async function onLogin() {
-  error.value = ''
-  loading.value = true
-  try {
-    // zavolať login
-    await auth.login(email.value, password.value)
-
-    // presmerovať po úspechu na dashboard
-    router.push('/dashboard')
-  } catch (e) {
-    error.value = e.response?.data?.message || 'Nesprávne prihlasovacie údaje alebo chyba servera.'
-  } finally {
-    loading.value = false
-  }
-  console.log('Login kliknutý')
-}
-</script>
-
 <template>
   <form @submit.prevent="onLogin" class="login-form">
     <input v-model="email" placeholder="Email" type="email" required />
@@ -37,6 +6,38 @@ async function onLogin() {
     <p v-if="error" style="color:red">{{ error }}</p>
   </form>
 </template>
+
+<script>
+import { useAuthStore } from '../stores/auth'
+
+export default {
+  name: 'Login',
+  data() {
+    return {
+      email: '',
+      password: '',
+      error: '',
+      loading: false,
+      auth: useAuthStore()
+    }
+  },
+  methods: {
+    async onLogin() {
+      this.error = ''
+      this.loading = true
+      try {
+        await this.auth.login(this.email, this.password)
+        this.$router.push('/dashboard')
+      } catch (e) {
+        this.error = e.response?.data?.message || 'Nesprávne prihlasovacie údaje alebo chyba servera.'
+      } finally {
+        this.loading = false
+      }
+      console.log('Login kliknutý')
+    }
+  }
+}
+</script>
 
 <style scoped>
 .login-form {
