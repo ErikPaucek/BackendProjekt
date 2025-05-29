@@ -36,15 +36,14 @@ async function addYear() {
 }
 
 async function removeYear(id) {
-  await deleteYear(id)
-  await loadYears()
-  await loadSubpages()
-  await conferenceStore.fetchConferences()
-}
-
-async function removePage(pageId) {
-  await deleteSubpage(pageId)
-  await loadSubpages()
+  try {
+    await deleteYear(id)
+    await loadYears()
+    await loadSubpages()
+    await conferenceStore.fetchConferences()
+  } catch (e) {
+    alert('Chyba pri mazaní ročníka: ' + (e.response?.data?.message || e.message))
+  }
 }
 
 // Pridanie podstránky
@@ -72,6 +71,12 @@ async function saveEditPage(page) {
   })
   editPageId.value = null
   editPageTitle.value = ''
+  await loadSubpages()
+}
+
+// Odstránenie podstránky
+async function removePage(pageId) {
+  await deleteSubpage(pageId)
   await loadSubpages()
 }
 

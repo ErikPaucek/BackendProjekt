@@ -26,18 +26,20 @@ class ConferenceYearController extends Controller
         return response()->json($conferenceYear);
     }
 
-    public function update(Request $request, ConferenceYear $Year)
+    public function update(Request $request, ConferenceYear $conferenceYear)
     {
         $validated = $request->validate([
-            'year' => 'required|integer|unique:years,year,' . $Year->id,
+            'year' => 'required|integer|unique:years,year,' . $conferenceYear->id,
         ]);
-        $Year->update($validated);
-        return response()->json($Year);
+        $conferenceYear->update($validated);
+        return response()->json($conferenceYear);
     }
 
     public function destroy(ConferenceYear $conferenceYear)
     {
-        $conferenceYear->delete();
-        return response()->json(null, 204);
+        \Log::info('Mazem ročník', ['id' => $conferenceYear->id, 'year' => $conferenceYear->year]);
+        $deleted = $conferenceYear->delete();
+        \Log::info('Delete result', ['deleted' => $deleted]);
+        return response()->json(['deleted' => $deleted], 200);
     }
 }

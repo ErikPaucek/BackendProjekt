@@ -16,13 +16,13 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
 
     // Priraďovanie editorov k ročníku
-    Route::post('/years/{year}/editors', [ConferenceYearController::class, 'assignEditor']);
-    Route::delete('/years/{year}/editors/{user}', [ConferenceYearController::class, 'removeEditor']);
+    Route::post('/years/{conferenceYear}/editors', [ConferenceYearController::class, 'assignEditor']);
+    Route::delete('/years/{conferenceYear}/editors/{user}', [ConferenceYearController::class, 'removeEditor']);
 
     // CRUD pre ročníky
     Route::post('/years', [ConferenceYearController::class, 'store']);
-    Route::put('/years/{year}', [ConferenceYearController::class, 'update']);
-    Route::delete('/years/{year}', [ConferenceYearController::class, 'destroy']);
+    Route::put('/years/{conferenceYear}', [ConferenceYearController::class, 'update']);
+    Route::delete('/years/{conferenceYear}', [ConferenceYearController::class, 'destroy']);
 });
 
 // Editor aj admin môžu spravovať podstránky
@@ -34,7 +34,7 @@ Route::middleware(['auth:sanctum', 'role:editor,admin'])->group(function () {
 
 // Verejné endpointy (GET pre roky a podstránky)
 Route::get('/years', [ConferenceYearController::class, 'index']);
-Route::get('/years/{year}', [ConferenceYearController::class, 'show']);
+Route::get('/years/{conferenceYear}', [ConferenceYearController::class, 'show']);
 Route::get('/subpages', [SubpageController::class, 'index']);
 Route::get('/subpages/{subpage}', [SubpageController::class, 'show']);
 

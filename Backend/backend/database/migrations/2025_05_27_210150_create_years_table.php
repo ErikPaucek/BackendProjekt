@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void {
         Schema::create('years', function (Blueprint $table) {
-            $table->id();
-            $table->year('year');
-            $table->timestamps();
-        });
+    $table->id();
+    $table->integer('year')->unique();
+    $table->timestamps();
+});
     }
 
     public function down(): void {
