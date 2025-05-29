@@ -4,6 +4,7 @@ import Login from '../views/Login.vue'
 import Dashboard from '../views/Dashboard.vue'
 import ConferenceView from '../views/ConferenceView.vue'
 import PageView from '../views/PageView.vue'
+import EditorDashboard from '../views/EditorDashboard.vue' // <-- pridaj tento import
 import { useAuthStore } from '../stores/auth'
 
 const routes = [
@@ -14,6 +15,12 @@ const routes = [
     name: 'Dashboard', 
     component: Dashboard, 
     meta: { requiresAuth: true } 
+  },
+  {
+    path: '/editordashboard', // <-- pridaj túto route
+    name: 'EditorDashboard',
+    component: EditorDashboard,
+    meta: { requiresAuth: true }
   },
   {
     path: '/conference/:id',
