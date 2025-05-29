@@ -42,10 +42,10 @@ export default {
 
 <template>
   <div>
-    <nav class="navbar" v-if="route.path !== '/login'">
+        <nav class="navbar" v-if="route.path !== '/login'">
       <router-link to="/">Home</router-link>
-      <router-link to="/dashboard">Dashboard</router-link>
-
+      <router-link v-if="auth.user && auth.user.role === 'admin'" to="/dashboard">Dashboard</router-link>
+    
       <div class="auth-area">
         <template v-if="auth.user">
           <span>Prihlásený ako: <strong>{{ auth.user.name }}</strong> ({{ auth.user.role }})</span>

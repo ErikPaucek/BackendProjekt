@@ -21,13 +21,19 @@ export default {
       auth: useAuthStore()
     }
   },
-  methods: {
+  methods: { // ← tu bola chyba, musí byť bez medzery a s čiarkou pred tým
     async onLogin() {
       this.error = ''
       this.loading = true
       try {
         await this.auth.login(this.email, this.password)
-        this.$router.push('/dashboard')
+        if (this.auth.user && this.auth.user.role === 'admin') {
+          this.$router.push('/dashboard')
+        } else if (this.auth.user && this.auth.user.role === 'editor') {
+          this.$router.push('/editordashboard')
+        } else {
+          this.$router.push('/')
+        }
       } catch (e) {
         this.error = e.response?.data?.message || 'Nesprávne prihlasovacie údaje alebo chyba servera.'
       } finally {
