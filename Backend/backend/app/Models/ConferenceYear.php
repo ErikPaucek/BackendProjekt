@@ -13,10 +13,9 @@ class ConferenceYear extends Model
 
     // Rok (ročník) môže mať viacerých používateľov (editorov)
     public function users()
-    {
-        return $this->belongsToMany(User::class, 'user_year', 'year_id', 'user_id');
-        // Predpokladáme, že pivot tabuľka sa volá user_year, môžeš si upraviť podľa potreby
-    }
+{
+    return $this->belongsToMany(User::class, 'user_year', 'year_id', 'user_id');
+}
 
     // Rok má viaceré podstránky
     public function subpages()

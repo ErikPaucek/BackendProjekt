@@ -20,6 +20,18 @@ class UserSeeder extends Seeder
             'password' => Hash::make('editor'),
             'role' => 'editor',
         ]);
+
+         User::create([
+            'email' => 'editor2@example.com',
+            'password' => Hash::make('editor'),
+            'role' => 'editor',
+        ]);
+
+         User::create([
+            'email' => 'editor3@example.com',
+            'password' => Hash::make('editor'),
+            'role' => 'editor',
+        ]);
     }
 }
 
