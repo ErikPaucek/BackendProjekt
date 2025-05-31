@@ -23,19 +23,25 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+        path: '/conference/:yearId/page/:pageId',
+        name: 'PageView',
+        component: PageView,
+        props: true
+  },
+  {
     path: '/conference/:id',
     name: 'ConferenceView',
     component: ConferenceView,
     props: true,
     children: [
-      {
-        path: 'page/:pageId',
-        name: 'PageView',
-        component: PageView,
-        props: true,
-      },
+     
     ],
   },
+{
+  path: '/conference/:yearId/page/:pageId/edit',
+  name: 'PageEdit',
+  component: () => import('@/views/PageEdit.vue')
+}
 ]
 
 const router = createRouter({
@@ -43,7 +49,6 @@ const router = createRouter({
   routes,
 })
 
-// Ochrana routovania podľa prihlásenia a role
 router.beforeEach(async (to, from, next) => {
   const auth = useAuthStore()
   if (!auth.user && localStorage.getItem('token')) {

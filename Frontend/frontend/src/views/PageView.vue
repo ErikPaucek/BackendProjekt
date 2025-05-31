@@ -1,43 +1,42 @@
+<template>
+  <div class="pageview-content">
+    <div v-html="page.content" class="page-html"></div>
+  </div>
+</template>
+
 <script>
-import { computed } from 'vue'
-import { useConferenceStore } from '../stores/conferences'
+import api from '../plugins/axios'
 
 export default {
-  name: 'PageView',
-  props: ['confId', 'pageId'],
+  props: ['pageId'],
   data() {
     return {
-      store: useConferenceStore()
+      page: { title: '', content: '' }
     }
   },
-  computed: {
-    page() {
-      const id = parseInt(this.pageId)
-      return this.store.getPageById(id) || { title: '', content: '', attachments: [] }
-    }
+  async mounted() {
+    const res = await api.get(`/subpages/${this.pageId}`)
+    this.page = res.data
+    console.log('API page:', this.page)
   }
 }
 </script>
 
-<template>
-  <div class="content">
-    <h2>{{ page.title }}</h2>
-    <div v-html="page.content"></div>
-    <div v-if="page.attachments.length">
-      <h4>Prílohy:</h4>
-      <ul>
-        <li v-for="att in page.attachments" :key="att.url">
-          <a :href="att.url" target="_blank" rel="noopener">{{ att.name }}</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</template>
-
 <style scoped>
-.content {
-  padding: 20px;
+.pageview-content {
+  min-height: 100vh;
+  padding: 40px 0 0 40px; 
+  background: none;
+  box-shadow: none;
+  max-width: 100vw;
+}
+
+.page-html {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #222;
+  word-break: break-word;
+  text-align: left;
+  background: none;
 }
 </style>
-
-

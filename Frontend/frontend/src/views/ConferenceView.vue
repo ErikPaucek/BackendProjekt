@@ -1,26 +1,40 @@
 <script>
-import { computed } from 'vue'
+import ConferenceBar from '../components/ConferenceBar.vue'
 import { useConferenceStore } from '../stores/conferences'
 
 export default {
-  name: 'ConferenceContent',
+  name: 'ConferenceView',
+  components: { ConferenceBar },
   props: ['id'],
   data() {
     return {
-      store: useConferenceStore()
+      conference: null
     }
   },
-  computed: {
-    conference() {
-      return this.store.conferences.find(c => c.id.toString() === this.id)
+  async created() {
+    const store = useConferenceStore()
+    await store.fetchConference(this.id)
+    this.conference = store.conferences.find(
+      c => c.id.toString() === this.id.toString()
+    )
+  },
+  watch: {
+    id: {
+      immediate: true,
+      async handler(newId) {
+        const store = useConferenceStore()
+        await store.fetchConference(newId)
+        this.conference = store.conferences.find(
+          c => c.id.toString() === newId.toString()
+        )
+      }
     }
   }
 }
 </script>
 
-<<template>
+<template>
   <div class="conference-content">
-    <h2>{{ conference.title }} ({{ conference.year }})</h2>
-    <router-view /> 
+    <ConferenceBar :conferenceId="id" :key="id" />
   </div>
 </template>

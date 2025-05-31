@@ -1,12 +1,3 @@
-<template>
-  <form @submit.prevent="onLogin" class="login-form">
-    <input v-model="email" placeholder="Email" type="email" required />
-    <input v-model="password" type="password" placeholder="Heslo" required />
-    <button type="submit" :disabled="loading">Prihlásiť sa</button>
-    <p v-if="error" style="color:red">{{ error }}</p>
-  </form>
-</template>
-
 <script>
 import { useAuthStore } from '../stores/auth'
 
@@ -44,6 +35,15 @@ export default {
   }
 }
 </script>
+
+<template>
+  <form @submit.prevent="onLogin" class="login-form">
+    <input v-model="email" placeholder="Email" type="email" required />
+    <input v-model="password" type="password" placeholder="Heslo" required />
+    <button type="submit" :disabled="loading">Prihlásiť sa</button>
+    <p v-if="error" style="color:red">{{ error }}</p>
+  </form>
+</template>
 
 <style scoped>
 .login-form {

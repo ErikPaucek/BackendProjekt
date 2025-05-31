@@ -1,41 +1,8 @@
-<template>
-  <div class="dashboard-content">
-    <!-- Panel 1: Správa podstránok -->
-    <div>
-      <h2>Správa podstránok</h2>
-      <div class="years-grid">
-        <div v-for="year in editorYears" :key="year.id" class="year-card">
-          <div class="year-header">
-            <span class="year-title">{{ year.year }}</span>
-          </div>
-          <div class="add-page-box">
-            <input v-model="pageTitles[year.id]" placeholder="Názov podstránky" />
-            <button @click="addPage(year.id)">Pridať podstránku</button>
-          </div>
-          <ul class="subpage-list">
-            <li v-for="page in subpages.filter(p => p.year_id === year.id)" :key="page.id" class="subpage-item">
-              <template v-if="editPageId === page.id">
-                <input v-model="editPageTitle" />
-                <button @click="saveEditPage(page)">Uložiť</button>
-                <button @click="cancelEditPage">Zrušiť</button>
-              </template>
-              <template v-else>
-                <span>{{ page.title }}</span>
-                <button class="edit-btn" @click="startEditPage(page)" title="Upraviť">✏️</button>
-                <button class="delete-btn" @click="removePage(page.id)" title="Vymazať">🗑️</button>
-              </template>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script>
 import { fetchSubpages, createSubpage, updateSubpage, deleteSubpage } from '../services/subpage'
 import { fetchYears } from '../services/years'
 import { useAuthStore } from '../stores/auth'
+import { useConferenceStore } from '../stores/conferences'
 
 export default {
   data() {
@@ -45,7 +12,8 @@ export default {
       pageTitles: {},
       editPageId: null,
       editPageTitle: '',
-      authStore: useAuthStore()
+      authStore: useAuthStore(),
+      conferenceStore: useConferenceStore() 
     }
   },
   computed: {
@@ -81,6 +49,8 @@ export default {
       await createSubpage({ year_id: yearId, title })
       this.pageTitles[yearId] = ''
       await this.loadSubpages()
+      await this.conferenceStore.fetchPages() // <-- Pridané, aby sa aktualizoval store
+      await this.conferenceStore.fetchConference(yearId) 
     },
     startEditPage(page) {
       this.editPageId = page.id
@@ -96,10 +66,15 @@ export default {
       this.editPageId = null
       this.editPageTitle = ''
       await this.loadSubpages()
+      await this.conferenceStore.fetchPages() // <-- Pridané, aby sa aktualizoval store
+      await this.conferenceStore.fetchConference(page.year_id) 
     },
     async removePage(pageId) {
+      const page = this.subpages.find(p => p.id === pageId)
       await deleteSubpage(pageId)
       await this.loadSubpages()
+      await this.conferenceStore.fetchPages() // <-- Pridané, aby sa aktualizoval store
+      if (page) await this.conferenceStore.fetchConference(page.year_id) 
     },
     cancelEditPage() {
       this.editPageId = null
@@ -108,6 +83,45 @@ export default {
   }
 }
 </script>
+
+<template>
+  <div class="dashboard-content">
+    <!-- Panel 1: Správa podstránok -->
+    <div>
+      <h2>Správa podstránok</h2>
+      <div class="years-grid">
+        <div v-for="year in editorYears" :key="year.id" class="year-card">
+          <div class="year-header">
+            <span class="year-title">{{ year.year }}</span>
+          </div>
+          <div class="add-page-box">
+            <input v-model="pageTitles[year.id]" placeholder="Názov podstránky" />
+            <button @click="addPage(year.id)">Pridať podstránku</button>
+          </div>
+          <ul class="subpage-list">
+            <li v-for="page in subpages.filter(p => p.year_id === year.id)" :key="page.id" class="subpage-item">
+              <template v-if="editPageId === page.id">
+                <input v-model="editPageTitle" />
+                <button @click="saveEditPage(page)">Uložiť</button>
+                <button @click="cancelEditPage">Zrušiť</button>
+              </template>
+              <template v-else>
+                <span>{{ page.title }}</span>
+                <router-link
+                  :to="`/conference/${year.id}/page/${page.id}/edit`"
+                  class="edit-btn"
+                  title="Upraviť">
+                  ✏️
+                </router-link>
+                <button class="delete-btn" @click="removePage(page.id)" title="Vymazať">🗑️</button>
+              </template>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .dashboard-content {
@@ -180,6 +194,7 @@ export default {
 }
 .edit-btn, .delete-btn {
   background: none;
+  text-decoration: none;
   border: none;
   cursor: pointer;
   font-size: 1.1em;

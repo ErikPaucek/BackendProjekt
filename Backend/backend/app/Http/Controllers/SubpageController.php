@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\Subpage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -60,4 +58,5 @@ class SubpageController extends Controller
         $subpage->delete();
         return response()->json(null, 204);
     }
+
 }

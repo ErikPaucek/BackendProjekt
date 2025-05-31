@@ -1,120 +1,3 @@
-<template>
-  <div class="dashboard-content">
-    <div class="dashboard-panels-grid">
-      <!-- Panel 1: Správa ročníkov a podstránok -->
-      <div>
-        <h2>Správa ročníkov a podstránok</h2>
-        <div class="add-year-box">
-          <input
-            v-model.number="newYear"
-            type="number"
-            min="1900"
-            step="1"
-            pattern="\d*"
-            inputmode="numeric"
-            placeholder="Zadaj nový rok"
-          />
-          <button @click="addYear">Pridať ročník</button>
-        </div>
-        <div class="years-grid">
-          <div v-for="year in years" :key="year.id" class="year-card">
-            <div class="year-header">
-              <span class="year-title">{{ year.year }}</span>
-              <button class="delete-btn" @click="removeYear(year.id)" title="Vymazať ročník">🗑️</button>
-            </div>
-            <div class="add-page-box">
-              <input v-model="pageTitles[year.id]" placeholder="Názov podstránky" />
-              <button @click="addPage(year.id)">Pridať podstránku</button>
-            </div>
-            <ul class="subpage-list">
-              <li v-for="page in subpages.filter(p => p.year_id === year.id)" :key="page.id" class="subpage-item">
-                <template v-if="editPageId === page.id">
-                  <input v-model="editPageTitle" />
-                  <button @click="saveEditPage(page)">Uložiť</button>
-                  <button @click="cancelEditPage">Zrušiť</button>
-                </template>
-                <template v-else>
-                  <span>{{ page.title }}</span>
-                  <button class="edit-btn" @click="startEditPage(page)" title="Upraviť">✏️</button>
-                  <button class="delete-btn" @click="removePage(page.id)" title="Vymazať">🗑️</button>
-                </template>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- Panel 2: Správa editorov pre ročníky -->
-      <div>
-        <h2>Správa editorov pre ročníky</h2>
-        <div class="years-grid">
-          <div v-for="year in years" :key="year.id" class="year-card">
-            <div class="year-header">
-              <span class="year-title">{{ year.year }}</span>
-            </div>
-            <div>
-              <h4 style="margin: 0 0 8px 0;">Editori pre tento ročník:</h4>
-              <ul>
-                <li v-for="editor in year.editors || []" :key="editor.id" class="subpage-item">
-                  {{ editor.email }}
-                  <button class="delete-btn" @click="removeEditor(year.id, editor.id)" title="Odobrať editora">❌</button>
-                </li>
-              </ul>
-              <div class="add-page-box" style="margin-bottom:0;">
-                <select v-model="selectedEditor[year.id]">
-                  <option value="">Vyber editora</option>
-                  <option v-for="user in editors" :key="user.id" :value="user.id">{{ user.email }}</option>
-                </select>
-                <button @click="assignEditor(year.id)">Pridať editora</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Panel 3: Správa používateľov -->
-  <div>
-    <h2>Správa používateľov</h2>
-    <div class="add-user-box">
-      <input v-model="newUser.email" type="email" placeholder="Email" />
-      <input v-model="newUser.password" type="password" placeholder="Heslo" />
-      <select v-model="newUser.role">
-        <option value="">Vyber rolu</option>
-        <option value="editor">Editor</option>
-        <option value="admin">Admin</option>
-      </select>
-      <button @click="addUser">Pridať používateľa</button>
-    </div>
-    <div class="users-grid">
-      <div v-for="user in users" :key="user.id" class="user-card">
-        <template v-if="editUserId !== user.id">
-          <div class="user-header">
-            <span class="user-email">{{ user.email }}</span>
-            <span class="user-role">{{ user.role }}</span>
-            <button class="edit-btn" @click="startEditUser(user)" title="Upraviť">✏️</button>
-            <button class="delete-btn" @click="removeUser(user.id)" title="Vymazať používateľa">🗑️</button>
-          </div>
-        </template>
-        <template v-else>
-          <div class="user-header">
-            <input v-model="editUser.email" type="email" placeholder="Email" />
-            <input v-model="editUser.password" type="password" placeholder="Nové heslo (nepovinné)" />
-            <select v-model="editUser.role">
-              <option value="">Vyber rolu</option>
-              <option value="editor">Editor</option>
-              <option value="admin">Admin</option>
-            </select>
-            <button @click="saveEditUser(user.id)">Uložiť</button>
-            <button @click="cancelEditUser">Zrušiť</button>
-          </div>
-        </template>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script>
 import { fetchYears, createYear, deleteYear } from '../services/years'
 import { fetchSubpages, createSubpage, updateSubpage, deleteSubpage } from '../services/subpage'
@@ -220,6 +103,7 @@ export default {
       await createSubpage({ year_id: yearId, title })
       this.pageTitles[yearId] = ''
       await this.loadSubpages()
+      await this.conferenceStore.fetchConference(yearId) // ← doplnené
     },
     startEditPage(page) {
       this.editPageId = page.id
@@ -235,10 +119,13 @@ export default {
       this.editPageId = null
       this.editPageTitle = ''
       await this.loadSubpages()
+      await this.conferenceStore.fetchConference(page.year_id) // ← doplnené
     },
     async removePage(pageId) {
+      const page = this.subpages.find(p => p.id === pageId)
       await deleteSubpage(pageId)
       await this.loadSubpages()
+      if (page) await this.conferenceStore.fetchConference(page.year_id) // ← doplnené
     },
     cancelEditPage() {
       this.editPageId = null
@@ -281,7 +168,7 @@ export default {
         }
       }
     },
-    // EDIT USER
+  
     startEditUser(user) {
       this.editUserId = user.id
       this.editUser = { email: user.email, password: '', role: user.role }
@@ -337,6 +224,123 @@ export default {
   }
 }
 </script>
+
+<template>
+  <div class="dashboard-content">
+    <div class="dashboard-panels-grid">
+      <!-- Panel 1: Správa ročníkov a podstránok -->
+      <div>
+        <h2>Správa ročníkov a podstránok</h2>
+        <div class="add-year-box">
+          <input
+            v-model.number="newYear"
+            type="number"
+            min="1900"
+            step="1"
+            pattern="\d*"
+            inputmode="numeric"
+            placeholder="Zadaj nový rok"
+          />
+          <button @click="addYear">Pridať ročník</button>
+        </div>
+        <div class="years-grid">
+          <div v-for="year in years" :key="year.id" class="year-card">
+            <div class="year-header">
+              <span class="year-title">{{ year.year }}</span>
+              <button class="delete-btn" @click="removeYear(year.id)" title="Vymazať ročník">🗑️</button>
+            </div>
+            <div class="add-page-box">
+              <input v-model="pageTitles[year.id]" placeholder="Názov podstránky" />
+              <button @click="addPage(year.id)">Pridať podstránku</button>
+            </div>
+            <ul class="subpage-list">
+              <li v-for="page in subpages.filter(p => p.year_id === year.id)" :key="page.id" class="subpage-item">
+                <span>{{ page.title }}</span>
+               <router-link
+                :to="`/conference/${year.id}/page/${page.id}?edit=1`"
+                class="edit-btn"
+                title="Upraviť"
+                style="background: none; border: none; padding: 2px 6px; font-size: 1.1em;"
+>
+                ✏️
+              </router-link>
+                <button class="delete-btn" @click="removePage(page.id)" title="Vymazať">🗑️</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 2: Správa editorov pre ročníky -->
+      <div>
+        <h2>Správa editorov pre ročníky</h2>
+        <div class="years-grid">
+          <div v-for="year in years" :key="year.id" class="year-card">
+            <div class="year-header">
+              <span class="year-title">{{ year.year }}</span>
+            </div>
+            <div>
+              <h4 style="margin: 0 0 8px 0;">Editori pre tento ročník:</h4>
+              <ul>
+                <li v-for="editor in year.editors || []" :key="editor.id" class="subpage-item">
+                  {{ editor.email }}
+                  <button class="delete-btn" @click="removeEditor(year.id, editor.id)" title="Odobrať editora">❌</button>
+                </li>
+              </ul>
+              <div class="add-page-box" style="margin-bottom:0;">
+                <select v-model="selectedEditor[year.id]">
+                  <option value="">Vyber editora</option>
+                  <option v-for="user in editors" :key="user.id" :value="user.id">{{ user.email }}</option>
+                </select>
+                <button @click="assignEditor(year.id)">Pridať editora</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel 3: Správa používateľov -->
+  <div>
+    <h2>Správa používateľov</h2>
+    <div class="add-user-box">
+      <input v-model="newUser.email" type="email" placeholder="Email" />
+      <input v-model="newUser.password" type="password" placeholder="Heslo" />
+      <select v-model="newUser.role">
+        <option value="">Vyber rolu</option>
+        <option value="editor">Editor</option>
+        <option value="admin">Admin</option>
+      </select>
+      <button @click="addUser">Pridať používateľa</button>
+    </div>
+    <div class="users-grid">
+      <div v-for="user in users" :key="user.id" class="user-card">
+        <template v-if="editUserId !== user.id">
+          <div class="user-header">
+            <span class="user-email">{{ user.email }}</span>
+            <span class="user-role">{{ user.role }}</span>
+            <button class="edit-btn" @click="startEditUser(user)" title="Upraviť">✏️</button>
+            <button class="delete-btn" @click="removeUser(user.id)" title="Vymazať používateľa">🗑️</button>
+          </div>
+        </template>
+        <template v-else>
+          <div class="user-header">
+            <input v-model="editUser.email" type="email" placeholder="Email" />
+            <input v-model="editUser.password" type="password" placeholder="Nové heslo (nepovinné)" />
+            <select v-model="editUser.role">
+              <option value="">Vyber rolu</option>
+              <option value="editor">Editor</option>
+              <option value="admin">Admin</option>
+            </select>
+            <button @click="saveEditUser(user.id)">Uložiť</button>
+            <button @click="cancelEditUser">Zrušiť</button>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .dashboard-content {
@@ -444,6 +448,7 @@ h2 {
 }
 .edit-btn, .delete-btn {
   background: none;
+  text-decoration: none;
   border: none;
   cursor: pointer;
   font-size: 1.1em;

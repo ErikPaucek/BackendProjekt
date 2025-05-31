@@ -1,54 +1,3 @@
-<template>
-  <div>
-    <h2>Správa používateľov</h2>
-    <form @submit.prevent="addUser" class="user-form">
-      <input v-model="form.email" type="email" placeholder="Email" required />
-      <input v-model="form.password" type="password" placeholder="Heslo" required />
-      <select v-model="form.role" required>
-        <option value="" disabled>Vyber rolu</option>
-        <option value="admin">Admin</option>
-        <option value="editor">Editor</option>
-      </select>
-      <button type="submit">Pridať používateľa</button>
-    </form>
-    <div v-if="error" class="error">{{ error }}</div>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Email</th>
-          <th>Rola</th>
-          <th>Akcie</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="user in users" :key="user.id">
-          <td>{{ user.id }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.role }}</td>
-          <td>
-            <button @click="editUser(user)">Upraviť</button>
-            <button @click="deleteUser(user.id)">Zmazať</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div v-if="edit.id" class="edit-section">
-      <h3>Upraviť používateľa</h3>
-      <form @submit.prevent="updateUser">
-        <input v-model="edit.email" type="email" placeholder="Email" required />
-        <input v-model="edit.password" type="password" placeholder="Nové heslo (nepovinné)" />
-        <select v-model="edit.role" required>
-          <option value="admin">Admin</option>
-          <option value="editor">Editor</option>
-        </select>
-        <button type="submit">Uložiť</button>
-        <button type="button" @click="edit.id = null">Zrušiť</button>
-      </form>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import api from '../plugins/axios'
@@ -111,8 +60,60 @@ async function deleteUser(id: number) {
   }
 }
 
+
 onMounted(fetchUsers)
 </script>
+
+<template>
+  <div>
+    <h2>Správa používateľov</h2>
+    <form @submit.prevent="addUser" class="user-form">
+      <input v-model="form.email" type="email" placeholder="Email" required />
+      <input v-model="form.password" type="password" placeholder="Heslo" required />
+      <select v-model="form.role" required>
+        <option value="" disabled>Vyber rolu</option>
+        <option value="admin">Admin</option>
+        <option value="editor">Editor</option>
+      </select>
+      <button type="submit">Pridať používateľa</button>
+    </form>
+    <div v-if="error" class="error">{{ error }}</div>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Email</th>
+          <th>Rola</th>
+          <th>Akcie</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="user in users" :key="user.id">
+          <td>{{ user.id }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role }}</td>
+          <td>
+            <button @click="editUser(user)">Upraviť</button>
+            <button @click="deleteUser(user.id)">Zmazať</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div v-if="edit.id" class="edit-section">
+      <h3>Upraviť používateľa</h3>
+      <form @submit.prevent="updateUser">
+        <input v-model="edit.email" type="email" placeholder="Email" required />
+        <input v-model="edit.password" type="password" placeholder="Nové heslo (nepovinné)" />
+        <select v-model="edit.role" required>
+          <option value="admin">Admin</option>
+          <option value="editor">Editor</option>
+        </select>
+        <button type="submit">Uložiť</button>
+        <button type="button" @click="edit.id = null">Zrušiť</button>
+      </form>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .user-form, .edit-section form {

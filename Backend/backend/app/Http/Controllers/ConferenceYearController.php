@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Models\ConferenceYear;
 use Illuminate\Http\Request;
 
@@ -9,7 +7,6 @@ class ConferenceYearController extends Controller
 {
     public function index()
     {
-        // Načítaj aj editorov (users)
         return response()->json(
             ConferenceYear::with('users')->get()->map(function ($year) {
                 $arr = $year->toArray();
@@ -31,10 +28,12 @@ class ConferenceYearController extends Controller
 
     public function show(ConferenceYear $conferenceYear)
     {
-        $year = $conferenceYear->load('users');
+        $year = $conferenceYear->load(['users', 'subpages']);
         $arr = $year->toArray();
         $arr['editors'] = $year->users;
         unset($arr['users']);
+        $arr['pages'] = $year->subpages;
+        unset($arr['subpages']);
         return response()->json($arr);
     }
 
@@ -55,13 +54,12 @@ class ConferenceYearController extends Controller
         return response()->json(['deleted' => $deleted], 200);
     }
 
-    // Priraď editorov k ročníku
     public function assignEditor(Request $request, ConferenceYear $conferenceYear)
     {
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
         ]);
-        // Zamedz duplicitám
+        
         if ($conferenceYear->users()->where('user_id', $validated['user_id'])->exists()) {
             return response()->json(['message' => 'Editor už je priradený.'], 409);
         }
@@ -69,7 +67,6 @@ class ConferenceYearController extends Controller
         return response()->json(['message' => 'Editor priradený.']);
     }
 
-    // Odober editora z ročníka
     public function removeEditor(ConferenceYear $conferenceYear, $userId)
     {
         $conferenceYear->users()->detach($userId);

@@ -11,7 +11,6 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 
-// Načítaj token a usera po refreshe stránky
 const auth = useAuthStore()
 auth.loadToken()
 if (auth.token && !auth.user) {
