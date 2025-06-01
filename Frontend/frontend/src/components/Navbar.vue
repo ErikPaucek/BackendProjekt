@@ -2,8 +2,12 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import BackButton from './BackButton.vue'
 
 export default {
+  components: {
+    BackButton
+  },
   name: 'Navbar',
   data() {
     return {}
@@ -34,11 +38,8 @@ export default {
 
 <template>
   <nav class="navbar">
-    <button class="back-btn" @click="goBack" title="Späť">
-      ←
-    </button>
-
     <div class="nav-links">
+      <BackButton />
       <router-link to="/" class="nav-link">Home</router-link>
       <router-link v-if="isLoggedIn" to="/dashboard" class="nav-link">Dashboard</router-link>
       <router-link v-if="!isLoggedIn" to="/login" class="nav-link">Login</router-link>
@@ -49,5 +50,6 @@ export default {
       <button @click="logout">Odhlásiť sa</button>
     </div>
   </nav>
+
 </template>
 

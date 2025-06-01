@@ -90,14 +90,13 @@ body{
     min-height: 100vh;
 }
 .editor-outer {
-  width: 100vw;
-  min-height: calc(100vh - 48px);
+  width: 100%;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   background: #f8f8f8;
-  padding: 60px 0 40px 0; 
-  padding-top: 170px;
+  padding: 120px 0 24px 0; /* upravené paddingy */
   box-sizing: border-box;
 }
 .editor-inner {

@@ -256,14 +256,14 @@ export default {
             <ul class="subpage-list">
               <li v-for="page in subpages.filter(p => p.year_id === year.id)" :key="page.id" class="subpage-item">
                 <span>{{ page.title }}</span>
-               <router-link
-                :to="`/conference/${year.id}/page/${page.id}?edit=1`"
+                <router-link
+                :to="`/conference/${year.id}/page/${page.id}/edit`"
                 class="edit-btn"
                 title="Upraviť"
                 style="background: none; border: none; padding: 2px 6px; font-size: 1.1em;"
->
+                >
                 ✏️
-              </router-link>
+                </router-link>
                 <button class="delete-btn" @click="removePage(page.id)" title="Vymazať">🗑️</button>
               </li>
             </ul>

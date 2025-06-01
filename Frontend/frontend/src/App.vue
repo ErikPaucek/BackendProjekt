@@ -2,13 +2,14 @@
 import { useAuthStore } from './stores/auth'
 import ConferencesBar from './components/ConferencesBar.vue'
 import ConferenceBar from './components/ConferenceBar.vue'
-
+import BackButton from './components/BackButton.vue'
 
 export default {
   name: 'App',
   components: {
     ConferencesBar,
     ConferenceBar,
+    BackButton,
   },
   data() {
     return {
@@ -47,6 +48,7 @@ export default {
       <router-link to="/" class="logo-link">
         <img src="/logo.png" alt="Logo" class="logo-img" />
       </router-link>
+      <BackButton/>
       <router-link to="/">Home</router-link>
       <router-link v-if="auth.user && auth.user.role === 'admin'" to="/dashboard">Dashboard</router-link>
       <router-link v-if="auth.user && auth.user.role === 'editor'" to="/editordashboard">EditorDashboard</router-link>

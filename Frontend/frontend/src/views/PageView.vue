@@ -17,7 +17,6 @@ export default {
   async mounted() {
     const res = await api.get(`/subpages/${this.pageId}`)
     this.page = res.data
-    console.log('API page:', this.page)
   }
 }
 </script>
