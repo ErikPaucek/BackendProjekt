@@ -10,7 +10,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('year_id')->constrained()->onDelete('cascade');
             $table->string('title');
-            $table->text('content')->nullable(); // pre WYSIWYG editor
+            $table->text('content')->nullable();
             $table->timestamps();
         });
     }

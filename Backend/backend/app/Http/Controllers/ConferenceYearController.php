@@ -48,9 +48,7 @@ class ConferenceYearController extends Controller
 
     public function destroy(ConferenceYear $conferenceYear)
     {
-        \Log::info('Mazem ročník', ['id' => $conferenceYear->id, 'year' => $conferenceYear->year]);
         $deleted = $conferenceYear->delete();
-        \Log::info('Delete result', ['deleted' => $deleted]);
         return response()->json(['deleted' => $deleted], 200);
     }
 
