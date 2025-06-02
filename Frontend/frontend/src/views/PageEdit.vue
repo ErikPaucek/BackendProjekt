@@ -1,40 +1,25 @@
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import Editor from '@tinymce/tinymce-vue'
+import TinymceEditor from '../components/TinymceEditor.vue'
 import api from '../plugins/axios'
-import { useConferenceStore } from '../stores/conferences'
 
 const route = useRoute()
 const router = useRouter()
 const pageId = route.params.pageId
 
+const title = ref('')
 const content = ref('')
+const yearId = ref(null)
 const success = ref(false)
 const error = ref(false)
-const store = useConferenceStore()
-
-const tinymceConfig = {
-  height: 400,
-  menubar: true,
-  plugins: [
-  'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
-  'searchreplace', 'visualblocks', 'code', 'fullscreen',
-  'insertdatetime', 'media', 'table', 'help', 'wordcount'
-],
-  toolbar:
-    'undo redo | formatselect | bold italic underline backcolor | ' +
-    'alignleft aligncenter alignright alignjustify | ' +
-    'bullist numlist outdent indent | removeformat | help | link image table',
-  image_title: true,
-  automatic_uploads: true,
-  file_picker_types: 'image',
-}
 
 onMounted(async () => {
   try {
     const res = await api.get(`/subpages/${pageId}`)
+    title.value = res.data.title || ''
     content.value = res.data.content || ''
+    yearId.value = res.data.year_id // <-- pridaj toto
   } catch (e) {
     error.value = true
   }
@@ -44,39 +29,27 @@ async function savePage() {
   success.value = false
   error.value = false
   try {
-    const res = await api.get(`/subpages/${pageId}`)
-    const page = res.data
-
     await api.put(`/subpages/${pageId}`, {
-      year_id: page.year_id,
-      title: page.title,
+      year_id: yearId.value, // <-- pridaj toto
+      title: title.value,
       content: content.value
     })
-    if (store.fetchPages) {
-      await store.fetchPages()
-    }
     success.value = true
+    router.back()
   } catch (e) {
     error.value = true
   }
-}
-
-function cancelEdit() {
-  router.back()
 }
 </script>
 
 <template>
   <div class="editor-outer">
     <div class="editor-inner">
-      <Editor
-        v-model="content"
-        :init="tinymceConfig"
-        api-key="8tszzirtg4tqdocu670ilh2klf3sgeotmljezhfywqc0tawp"
-      />
+      <input v-model="title" placeholder="Názov podstránky" class="page-title-input" />
+      <TinymceEditor v-model="content" />
       <div class="editor-actions">
         <button class="save-btn" @click="savePage">Uložiť</button>
-        <button class="cancel-btn" @click="cancelEdit">Zrušiť</button>
+        <button class="cancel-btn" @click="router.back()">Zrušiť</button>
         <span v-if="success" class="success-msg">Uložené!</span>
         <span v-if="error" class="error-msg">Chyba pri ukladaní.</span>
       </div>

@@ -249,9 +249,15 @@ export default {
               <span class="year-title">{{ year.year }}</span>
               <button class="delete-btn" @click="removeYear(year.id)" title="Vymazať ročník">🗑️</button>
             </div>
+                        <!-- filepath: c:\xampp\htdocs\BB\BackendProjekt-1\Frontend\frontend\src\views\Dashboard.vue -->
             <div class="add-page-box">
-              <input v-model="pageTitles[year.id]" placeholder="Názov podstránky" />
-              <button @click="addPage(year.id)">Pridať podstránku</button>
+              <router-link
+                :to="`/conference/${year.id}/page/new`"
+                class="add-page-btn"
+                style="padding: 6px 14px; border-radius: 5px; border: none; background: black; color: #fff; font-weight: bold; cursor: pointer; text-decoration: none;"
+              >
+                Pridať podstránku
+              </router-link>
             </div>
             <ul class="subpage-list">
               <li v-for="page in subpages.filter(p => p.year_id === year.id)" :key="page.id" class="subpage-item">
@@ -360,6 +366,7 @@ h2 {
   text-align: center;
   margin-bottom: 32px;
   color: #222;
+  margin-top: 48px; /* pridane pre posunutie nadpisu nizsie */
 }
 .add-year-box {
   display: flex;
