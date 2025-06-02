@@ -4,8 +4,9 @@ import Login from '../views/Login.vue'
 import Dashboard from '../views/Dashboard.vue'
 import ConferenceView from '../views/ConferenceView.vue'
 import PageView from '../views/PageView.vue'
-import EditorDashboard from '../views/EditorDashboard.vue' // <-- pridaj tento import
+import EditorDashboard from '../views/EditorDashboard.vue'
 import { useAuthStore } from '../stores/auth'
+import PageCreate from '../views/PageCreate.vue'
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
@@ -17,36 +18,41 @@ const routes = [
     meta: { requiresAuth: true } 
   },
   {
-    path: '/editordashboard', // <-- pridaj túto route
+    path: '/editordashboard',
     name: 'EditorDashboard',
     component: EditorDashboard,
     meta: { requiresAuth: true }
   },
   {
-        path: '/conference/:yearId/page/:pageId',
-        name: 'PageView',
-        component: PageView,
-        props: true
+    path: '/conference/:yearId/page/new',
+    name: 'PageCreate',
+    component: PageCreate,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/conference/:yearId/page/:pageId',
+    name: 'PageView',
+    component: PageView,
+    props: true
   },
   {
     path: '/conference/:id',
     name: 'ConferenceView',
     component: ConferenceView,
     props: true,
-    children: [
-     
-    ],
+    children: []
   },
-{
-  path: '/conference/:yearId/page/:pageId/edit',
-  name: 'PageEdit',
-  component: () => import('@/views/PageEdit.vue')
-}
+  {
+    path: '/conference/:yearId/page/:pageId/edit',
+    name: 'PageEdit',
+    component: () => import('@/views/PageEdit.vue'),
+    meta: { requiresAuth: true }
+  }
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes,
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes
 })
 
 router.beforeEach(async (to, from, next) => {
@@ -56,6 +62,10 @@ router.beforeEach(async (to, from, next) => {
   }
   if (to.meta.requiresAuth && !auth.user) {
     next('/login')
+  } else if (to.name === 'Dashboard' && auth.user?.role !== 'admin') {
+    next('/editordashboard')
+  } else if (to.name === 'EditorDashboard' && auth.user?.role !== 'editor') {
+    next('/dashboard')
   } else {
     next()
   }
