@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SubpageController;
 use App\Http\Controllers\ConferenceYearController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UploadController;
 
 // Admin-only endpoints
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
@@ -23,6 +24,19 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('/years', [ConferenceYearController::class, 'store']);
     Route::put('/years/{conferenceYear}', [ConferenceYearController::class, 'update']);
     Route::delete('/years/{conferenceYear}', [ConferenceYearController::class, 'destroy']);
+
+    // Admin dashboard data endpoint (príklad)
+    Route::get('/dashboard-data', function () {
+        return response()->json(['message' => 'Admin dashboard data']);
+    });
+});
+
+// Editor-only endpoints (editor dashboard)
+Route::middleware(['auth:sanctum', 'role:editor'])->group(function () {
+    // Editor dashboard data endpoint (príklad)
+    Route::get('/editordashboard-data', function () {
+        return response()->json(['message' => 'Editor dashboard data']);
+    });
 });
 
 // Editor aj admin môžu spravovať podstránky
@@ -30,6 +44,7 @@ Route::middleware(['auth:sanctum', 'role:editor,admin'])->group(function () {
     Route::post('/subpages', [SubpageController::class, 'store']);
     Route::put('/subpages/{subpage}', [SubpageController::class, 'update']);
     Route::delete('/subpages/{subpage}', [SubpageController::class, 'destroy']);
+    Route::post('/upload-image', [UploadController::class, 'upload']);
 });
 
 // Verejné endpointy (GET pre roky a podstránky)

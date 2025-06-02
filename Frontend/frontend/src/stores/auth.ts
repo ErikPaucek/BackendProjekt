@@ -14,7 +14,6 @@ export const useAuthStore = defineStore('auth', {
       if (this.token) {
         localStorage.setItem('token', this.token)
       }
-      console.log('Login response:', response.data)
     },
     async logout() {
       await api.post('/logout')

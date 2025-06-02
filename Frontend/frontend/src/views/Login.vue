@@ -30,7 +30,6 @@ export default {
       } finally {
         this.loading = false
       }
-      console.log('Login kliknutý')
     }
   }
 }
