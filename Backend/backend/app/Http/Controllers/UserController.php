@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    // Zoznam používateľov
     public function index(Request $request)
     {
         $role = $request->query('role');
@@ -17,8 +16,6 @@ class UserController extends Controller
         }
         return response()->json(User::all());
     }
-
-    // Pridanie editora/admina
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -30,8 +27,6 @@ class UserController extends Controller
         $user = User::create($validated);
         return response()->json($user, 201);
     }
-
-    // Úprava používateľa
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
@@ -45,8 +40,6 @@ class UserController extends Controller
         $user->update($validated);
         return response()->json($user);
     }
-
-    // Zmazanie používateľa
     public function destroy(User $user)
     {
         $user->delete();

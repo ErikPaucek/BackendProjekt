@@ -21,8 +21,6 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
     ];
-
-    // User môže byť priradený k viacerým ročníkom konferencie
     public function years()
     {
         return $this->belongsToMany(ConferenceYear::class, 'user_year', 'user_id', 'year_id');
