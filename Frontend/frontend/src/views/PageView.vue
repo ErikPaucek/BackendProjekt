@@ -1,5 +1,6 @@
 <template>
   <div class="pageview-content">
+    <h1 class="page-title">{{ page.title }}</h1>
     <div v-html="page.content" class="page-html"></div>
   </div>
 </template>
@@ -28,6 +29,14 @@ export default {
   background: none;
   box-shadow: none;
   max-width: 100vw;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 24px;
+  color: #222;
+  text-align: left;
 }
 
 .page-html {

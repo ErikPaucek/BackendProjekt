@@ -49,7 +49,7 @@ export default {
       await createSubpage({ year_id: yearId, title })
       this.pageTitles[yearId] = ''
       await this.loadSubpages()
-      await this.conferenceStore.fetchPages() // <-- Pridané, aby sa aktualizoval store
+      await this.conferenceStore.fetchPages()
       await this.conferenceStore.fetchConference(yearId) 
     },
     startEditPage(page) {
@@ -66,14 +66,14 @@ export default {
       this.editPageId = null
       this.editPageTitle = ''
       await this.loadSubpages()
-      await this.conferenceStore.fetchPages() // <-- Pridané, aby sa aktualizoval store
+      await this.conferenceStore.fetchPages()
       await this.conferenceStore.fetchConference(page.year_id) 
     },
     async removePage(pageId) {
       const page = this.subpages.find(p => p.id === pageId)
       await deleteSubpage(pageId)
       await this.loadSubpages()
-      await this.conferenceStore.fetchPages() // <-- Pridané, aby sa aktualizoval store
+      await this.conferenceStore.fetchPages()
       if (page) await this.conferenceStore.fetchConference(page.year_id) 
     },
     cancelEditPage() {
@@ -86,7 +86,6 @@ export default {
 
 <template>
   <div class="dashboard-content">
-    <!-- Panel 1: Správa podstránok -->
     <div>
       <h2>Správa podstránok</h2>
       <div class="years-grid">

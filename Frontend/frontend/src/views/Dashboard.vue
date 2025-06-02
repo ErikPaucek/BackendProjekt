@@ -103,7 +103,7 @@ export default {
       await createSubpage({ year_id: yearId, title })
       this.pageTitles[yearId] = ''
       await this.loadSubpages()
-      await this.conferenceStore.fetchConference(yearId) // ← doplnené
+      await this.conferenceStore.fetchConference(yearId)
     },
     startEditPage(page) {
       this.editPageId = page.id
@@ -119,13 +119,13 @@ export default {
       this.editPageId = null
       this.editPageTitle = ''
       await this.loadSubpages()
-      await this.conferenceStore.fetchConference(page.year_id) // ← doplnené
+      await this.conferenceStore.fetchConference(page.year_id)
     },
     async removePage(pageId) {
       const page = this.subpages.find(p => p.id === pageId)
       await deleteSubpage(pageId)
       await this.loadSubpages()
-      if (page) await this.conferenceStore.fetchConference(page.year_id) // ← doplnené
+      if (page) await this.conferenceStore.fetchConference(page.year_id)
     },
     cancelEditPage() {
       this.editPageId = null
@@ -228,7 +228,6 @@ export default {
 <template>
   <div class="dashboard-content">
     <div class="dashboard-panels-grid">
-      <!-- Panel 1: Správa ročníkov a podstránok -->
       <div>
         <h2>Správa ročníkov a podstránok</h2>
         <div class="add-year-box">
@@ -249,12 +248,10 @@ export default {
               <span class="year-title">{{ year.year }}</span>
               <button class="delete-btn" @click="removeYear(year.id)" title="Vymazať ročník">🗑️</button>
             </div>
-                        <!-- filepath: c:\xampp\htdocs\BB\BackendProjekt-1\Frontend\frontend\src\views\Dashboard.vue -->
             <div class="add-page-box">
               <router-link
                 :to="`/conference/${year.id}/page/new`"
                 class="add-page-btn"
-                style="padding: 6px 14px; border-radius: 5px; border: none; background: black; color: #fff; font-weight: bold; cursor: pointer; text-decoration: none;"
               >
                 Pridať podstránku
               </router-link>
@@ -263,12 +260,11 @@ export default {
               <li v-for="page in subpages.filter(p => p.year_id === year.id)" :key="page.id" class="subpage-item">
                 <span>{{ page.title }}</span>
                 <router-link
-                :to="`/conference/${year.id}/page/${page.id}/edit`"
-                class="edit-btn"
-                title="Upraviť"
-                style="background: none; border: none; padding: 2px 6px; font-size: 1.1em;"
+                  :to="`/conference/${year.id}/page/${page.id}/edit`"
+                  class="edit-btn"
+                  title="Upraviť"
                 >
-                ✏️
+                  ✏️
                 </router-link>
                 <button class="delete-btn" @click="removePage(page.id)" title="Vymazať">🗑️</button>
               </li>
@@ -276,8 +272,6 @@ export default {
           </div>
         </div>
       </div>
-
-      <!-- Panel 2: Správa editorov pre ročníky -->
       <div>
         <h2>Správa editorov pre ročníky</h2>
         <div class="years-grid">
@@ -298,7 +292,7 @@ export default {
                   <option value="">Vyber editora</option>
                   <option v-for="user in editors" :key="user.id" :value="user.id">{{ user.email }}</option>
                 </select>
-                <button @click="assignEditor(year.id)">Pridať editora</button>
+                <button @click="assignEditor(year.id)" class="add-page-btn">Pridať editora</button>
               </div>
             </div>
           </div>
@@ -306,8 +300,6 @@ export default {
       </div>
     </div>
   </div>
-
-  <!-- Panel 3: Správa používateľov -->
   <div>
     <h2>Správa používateľov</h2>
     <div class="add-user-box">
@@ -366,7 +358,7 @@ h2 {
   text-align: center;
   margin-bottom: 32px;
   color: #222;
-  margin-top: 48px; /* pridane pre posunutie nadpisu nizsie */
+  margin-top: 48px;
 }
 .add-year-box {
   display: flex;
@@ -429,7 +421,7 @@ h2 {
   border-radius: 5px;
   border: 1px solid #ccc;
 }
-.add-page-box button {
+.add-page-btn {
   padding: 6px 14px;
   border-radius: 5px;
   border: none;
@@ -437,9 +429,11 @@ h2 {
   color: #fff;
   font-weight: bold;
   cursor: pointer;
+  text-decoration: none;
   transition: background 0.2s;
+  display: inline-block;
 }
-.add-page-box button:hover {
+.add-page-btn:hover {
   background: #444;
 }
 .subpage-list {

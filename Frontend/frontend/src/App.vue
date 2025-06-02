@@ -49,7 +49,7 @@ export default {
         <img src="/logo.png" alt="Logo" class="logo-img" />
       </router-link>
       <BackButton/>
-      <router-link to="/">Home</router-link>
+      <router-link to="/">Domov</router-link>
       <router-link v-if="auth.user && auth.user.role === 'admin'" to="/dashboard">Dashboard</router-link>
       <router-link v-if="auth.user && auth.user.role === 'editor'" to="/editordashboard">EditorDashboard</router-link>
       <div class="auth-area">

@@ -19,7 +19,7 @@ onMounted(async () => {
     const res = await api.get(`/subpages/${pageId}`)
     title.value = res.data.title || ''
     content.value = res.data.content || ''
-    yearId.value = res.data.year_id // <-- pridaj toto
+    yearId.value = res.data.year_id
   } catch (e) {
     error.value = true
   }
@@ -30,7 +30,7 @@ async function savePage() {
   error.value = false
   try {
     await api.put(`/subpages/${pageId}`, {
-      year_id: yearId.value, // <-- pridaj toto
+      year_id: yearId.value,
       title: title.value,
       content: content.value
     })
@@ -69,7 +69,7 @@ body{
   justify-content: center;
   align-items: flex-start;
   background: #f8f8f8;
-  padding: 120px 0 24px 0; /* upravené paddingy */
+  padding: 120px 0 24px 0;
   box-sizing: border-box;
 }
 .editor-inner {

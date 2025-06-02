@@ -12,7 +12,7 @@ export default {
       auth: useAuthStore()
     }
   },
-  methods: { // ← tu bola chyba, musí byť bez medzery a s čiarkou pred tým
+  methods: {
     async onLogin() {
       this.error = ''
       this.loading = true

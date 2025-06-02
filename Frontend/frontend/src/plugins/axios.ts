@@ -7,7 +7,6 @@ const api = axios.create({
   },
 })
 
-// Pridaj interceptor na Authorization
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token')
   if (token) {

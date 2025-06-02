@@ -3,10 +3,6 @@
   <div class="home-wrapper">
     <div class="home-container">
       <h1>Vitajte v Konferenčnom systéme univerzitného konzorcia</h1>
-      <p>
-        Tento systém slúži na správu viacročných konferencií, príspevkov, používateľov a recenzného procesu.
-        Prihláste sa ako anonym, editor alebo administrátor podľa svojich oprávnení.
-      </p>
     </div>
   </div>
 </template>
