@@ -23,13 +23,13 @@ class UserSeeder extends Seeder
 
          User::create([
             'email' => 'editor2@example.com',
-            'password' => Hash::make('editor'),
+            'password' => Hash::make('editor2'),
             'role' => 'editor',
         ]);
 
          User::create([
             'email' => 'editor3@example.com',
-            'password' => Hash::make('editor'),
+            'password' => Hash::make('editor3'),
             'role' => 'editor',
         ]);
     }

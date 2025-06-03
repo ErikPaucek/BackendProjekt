@@ -3,7 +3,7 @@ namespace App\Http\Controllers;
 use App\Models\ConferenceYear;
 use Illuminate\Http\Request;
 
-class ConferenceYearController extends Controller
+class ConferenceYearController
 {
     public function index()
     {

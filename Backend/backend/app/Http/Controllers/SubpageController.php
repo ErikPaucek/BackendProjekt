@@ -4,7 +4,7 @@ use App\Models\Subpage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class SubpageController extends Controller
+class SubpageController
 {
     public function index()
     {
