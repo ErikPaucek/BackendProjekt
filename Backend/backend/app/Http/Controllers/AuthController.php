@@ -21,15 +21,20 @@ class AuthController
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
+
+        $user->tokens()->delete();
+
         $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
             'token' => $token,
             'user' => $user,
         ]);
     }
+
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
+        $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Logged out successfully']);
     }
 }

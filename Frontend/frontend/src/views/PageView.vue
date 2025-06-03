@@ -2,6 +2,7 @@
   <div class="pageview-content">
     <h1 class="page-title">{{ page.title }}</h1>
     <div v-html="page.content" class="page-html"></div>
+    <div v-if="error" class="error">{{ error }}</div>
   </div>
 </template>
 
@@ -9,15 +10,26 @@
 import api from '../plugins/axios'
 
 export default {
-  props: ['pageId'],
+  props: ['slug', 'year'],
   data() {
     return {
-      page: { title: '', content: '' }
+      page: { title: '', content: '' },
+      error: null
     }
   },
   async mounted() {
-    const res = await api.get(`/subpages/${this.pageId}`)
-    this.page = res.data
+    try {
+      const slug = this.slug || this.$route.params.slug
+      const year = this.year || this.$route.params.year
+      if (!slug || !year) {
+        this.error = 'Slug alebo rok nie je definovaný.'
+        return
+      }
+      const res = await api.get(`/subpages/slug/${year}/${slug}`)
+      this.page = res.data
+    } catch (e) {
+      this.error = 'Stránka nebola nájdená.'
+    }
   }
 }
 </script>
@@ -46,5 +58,10 @@ export default {
   word-break: break-word;
   text-align: left;
   background: none;
+}
+
+.error {
+  color: red;
+  margin-top: 20px;
 }
 </style>

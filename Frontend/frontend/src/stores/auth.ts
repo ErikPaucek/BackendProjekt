@@ -13,16 +13,22 @@ export const useAuthStore = defineStore('auth', {
       this.user = response.data.user
       if (this.token) {
         localStorage.setItem('token', this.token)
+        api.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
       }
     },
     async logout() {
-      await api.post('/logout')
+      try {
+        await api.post('/logout')
+      } catch (e) {
+      }
       this.user = null
       this.token = null
       localStorage.removeItem('token')
+      delete api.defaults.headers.common['Authorization']
     },
     async fetchUser() {
       if (!this.token) return
+      api.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
       const response = await api.get('/user')
       this.user = response.data
     },
@@ -30,6 +36,7 @@ export const useAuthStore = defineStore('auth', {
       const token = localStorage.getItem('token')
       if (token) {
         this.token = token
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`
       }
     }
   },

@@ -250,7 +250,7 @@ export default {
             </div>
             <div class="add-page-box">
               <router-link
-                :to="`/conference/${year.id}/page/new`"
+                :to="`/conference/${year.year}/page/new`"
                 class="add-page-btn"
               >
                 Pridať podstránku
@@ -260,11 +260,18 @@ export default {
               <li v-for="page in subpages.filter(p => p.year_id === year.id)" :key="page.id" class="subpage-item">
                 <span>{{ page.title }}</span>
                 <router-link
-                  :to="`/conference/${year.id}/page/${page.id}/edit`"
+                  :to="`/conference/${year.year}/page/${page.slug}/edit`"
                   class="edit-btn"
                   title="Upraviť"
                 >
                   ✏️
+                </router-link>
+                <router-link
+                  :to="`/conference/${year.year}/page/${page.slug}`"
+                  class="subpage-link"
+                  title="Zobraziť"
+                >
+                  👁️
                 </router-link>
                 <button class="delete-btn" @click="removePage(page.id)" title="Vymazať">🗑️</button>
               </li>

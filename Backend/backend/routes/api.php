@@ -1,5 +1,6 @@
 <?php
 
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -7,7 +8,6 @@ use App\Http\Controllers\SubpageController;
 use App\Http\Controllers\ConferenceYearController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UploadController;
-
 
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::get('/users', [UserController::class, 'index']);
@@ -27,14 +27,11 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     });
 });
 
-
 Route::middleware(['auth:sanctum', 'role:editor'])->group(function () {
-    // Editor dashboard data endpoint (príklad)
     Route::get('/editordashboard-data', function () {
         return response()->json(['message' => 'Editor dashboard data']);
     });
 });
-
 
 Route::middleware(['auth:sanctum', 'role:editor,admin'])->group(function () {
     Route::post('/subpages', [SubpageController::class, 'store']);
@@ -43,10 +40,12 @@ Route::middleware(['auth:sanctum', 'role:editor,admin'])->group(function () {
     Route::post('/upload-image', [UploadController::class, 'upload']);
 });
 
-
 Route::get('/years', [ConferenceYearController::class, 'index']);
 Route::get('/years/{conferenceYear}', [ConferenceYearController::class, 'show']);
 Route::get('/subpages', [SubpageController::class, 'index']);
+
+
+Route::get('/subpages/slug/{year}/{slug}', [SubpageController::class, 'showBySlugAndYear']);
 Route::get('/subpages/{subpage}', [SubpageController::class, 'show']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

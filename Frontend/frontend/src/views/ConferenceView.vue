@@ -5,7 +5,7 @@ import { useConferenceStore } from '../stores/conferences'
 export default {
   name: 'ConferenceView',
   components: { ConferenceBar },
-  props: ['id'],
+  props: ['year'],
   data() {
     return {
       conference: null
@@ -13,19 +13,19 @@ export default {
   },
   async created() {
     const store = useConferenceStore()
-    await store.fetchConference(this.id)
+    await store.fetchConferences()
     this.conference = store.conferences.find(
-      c => c.id.toString() === this.id.toString()
+      c => c.year.toString() === this.year.toString()
     )
   },
   watch: {
-    id: {
+    year: {
       immediate: true,
-      async handler(newId) {
+      async handler(newYear) {
         const store = useConferenceStore()
-        await store.fetchConference(newId)
+        await store.fetchConferences()
         this.conference = store.conferences.find(
-          c => c.id.toString() === newId.toString()
+          c => c.year.toString() === newYear.toString()
         )
       }
     }
@@ -35,6 +35,6 @@ export default {
 
 <template>
   <div class="conference-content">
-    <ConferenceBar :conferenceId="id" :key="id" />
+    <ConferenceBar :year="year" :key="year" />
   </div>
 </template>

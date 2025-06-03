@@ -107,10 +107,17 @@ export default {
               <template v-else>
                 <span>{{ page.title }}</span>
                 <router-link
-                  :to="`/conference/${year.id}/page/${page.id}/edit`"
+                  :to="`/conference/${year.year}/page/${page.slug}/edit`"
                   class="edit-btn"
                   title="Upraviť">
                   ✏️
+                </router-link>
+                <router-link
+                  :to="`/conference/${year.year}/page/${page.slug}`"
+                  class="subpage-link"
+                  title="Zobraziť"
+                >
+                  👁️
                 </router-link>
                 <button class="delete-btn" @click="removePage(page.id)" title="Vymazať">🗑️</button>
               </template>

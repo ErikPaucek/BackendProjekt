@@ -6,20 +6,22 @@ import api from '../plugins/axios'
 
 const route = useRoute()
 const router = useRouter()
-const pageId = route.params.pageId
+const year = route.params.year
+const slug = route.params.slug
 
 const title = ref('')
 const content = ref('')
-const yearId = ref(null)
+const year_id = ref(null)
 const success = ref(false)
 const error = ref(false)
+const duplicateError = ref(false)
 
 onMounted(async () => {
   try {
-    const res = await api.get(`/subpages/${pageId}`)
+    const res = await api.get(`/subpages/slug/${year}/${slug}`)
     title.value = res.data.title || ''
     content.value = res.data.content || ''
-    yearId.value = res.data.year_id
+    year_id.value = res.data.year_id
   } catch (e) {
     error.value = true
   }
@@ -28,16 +30,31 @@ onMounted(async () => {
 async function savePage() {
   success.value = false
   error.value = false
+  duplicateError.value = false
+  if (!title.value.trim()) {
+    error.value = true
+    return
+  }
   try {
+    const res = await api.get(`/subpages/slug/${year}/${slug}`)
+    const pageId = res.data.id
     await api.put(`/subpages/${pageId}`, {
-      year_id: yearId.value,
+      year_id: year_id.value,
       title: title.value,
       content: content.value
     })
     success.value = true
-    router.back()
+    setTimeout(() => router.back(), 800)
   } catch (e) {
-    error.value = true
+    if (
+      e.response &&
+      e.response.status === 422 &&
+      e.response.data?.message?.includes('Podstránka s týmto názvom')
+    ) {
+      duplicateError.value = true
+    } else {
+      error.value = true
+    }
   }
 }
 </script>
@@ -45,7 +62,13 @@ async function savePage() {
 <template>
   <div class="editor-outer">
     <div class="editor-inner">
-      <input v-model="title" placeholder="Názov podstránky" class="page-title-input" />
+      <input
+        v-model="title"
+        placeholder="Názov podstránky"
+        class="page-title-input"
+        :class="{ 'input-error': duplicateError }"
+      />
+      <span v-if="duplicateError" class="error-msg">Podstránka s týmto názvom už existuje v tomto ročníku.</span>
       <TinymceEditor v-model="content" />
       <div class="editor-actions">
         <button class="save-btn" @click="savePage">Uložiť</button>
@@ -136,5 +159,8 @@ body{
   color: #d32f2f;
   margin-left: 16px;
   font-weight: bold;
+}
+.input-error {
+  border: 1.5px solid #e74c3c;
 }
 </style>

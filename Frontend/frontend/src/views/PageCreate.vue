@@ -1,37 +1,60 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import TinymceEditor from '../components/TinymceEditor.vue'
 import api from '../plugins/axios'
 
 const route = useRoute()
 const router = useRouter()
-const yearId = route.params.yearId
+const yearParam = route.params.year
 
+const year_id = ref(null)
 const title = ref('')
 const content = ref('')
 const success = ref(false)
 const error = ref(false)
 const titleError = ref(false)
+const duplicateError = ref(false)
+
+onMounted(async () => {
+  const res = await api.get('/years')
+  const yearObj = res.data.find(y => y.year.toString() === yearParam?.toString())
+  if (yearObj) {
+    year_id.value = yearObj.id
+  }
+})
 
 async function savePage() {
   success.value = false
   error.value = false
   titleError.value = false
+  duplicateError.value = false
   if (!title.value.trim()) {
     titleError.value = true
     return
   }
+  if (!year_id.value) {
+    error.value = true
+    return
+  }
   try {
     await api.post('/subpages', {
-      year_id: yearId,
+      year_id: year_id.value,
       title: title.value,
       content: content.value
     })
     success.value = true
     setTimeout(() => router.back(), 800)
   } catch (e) {
-    error.value = true
+    if (
+      e.response &&
+      e.response.status === 422 &&
+      e.response.data?.message?.includes('Podstránka s týmto názvom')
+    ) {
+      duplicateError.value = true
+    } else {
+      error.value = true
+    }
   }
 }
 </script>
@@ -45,11 +68,12 @@ async function savePage() {
         v-model="title"
         placeholder="Názov podstránky"
         class="page-title-input"
-        :class="{ 'input-error': titleError }"
+        :class="{ 'input-error': titleError || duplicateError }"
         required
         autocomplete="off"
       />
       <span v-if="titleError" class="error-msg">Názov podstránky je povinný.</span>
+      <span v-if="duplicateError" class="error-msg">Podstránka s týmto názvom už existuje v tomto ročníku.</span>
       <TinymceEditor v-model="content" />
       <div class="editor-actions">
         <button class="save-btn" @click="savePage">Vytvoriť</button>

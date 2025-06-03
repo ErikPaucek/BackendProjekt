@@ -10,6 +10,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('year_id')->constrained()->onDelete('cascade');
             $table->string('title');
+            $table->string('slug')->unique();
             $table->text('content')->nullable();
             $table->timestamps();
         });
@@ -19,4 +20,3 @@ return new class extends Migration {
         Schema::dropIfExists('subpages');
     }
 };
-

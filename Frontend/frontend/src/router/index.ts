@@ -24,26 +24,26 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/conference/:yearId/page/new',
+    path: '/conference/:year/page/new',
     name: 'PageCreate',
     component: PageCreate,
     meta: { requiresAuth: true }
   },
   {
-    path: '/conference/:yearId/page/:pageId',
+    path: '/conference/:year/page/:slug',
     name: 'PageView',
     component: PageView,
     props: true
   },
   {
-    path: '/conference/:id',
+    path: '/conference/:year',
     name: 'ConferenceView',
     component: ConferenceView,
     props: true,
     children: []
   },
   {
-    path: '/conference/:yearId/page/:pageId/edit',
+    path: '/conference/:year/page/:slug/edit',
     name: 'PageEdit',
     component: () => import('@/views/PageEdit.vue'),
     meta: { requiresAuth: true }

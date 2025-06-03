@@ -8,10 +8,12 @@ class ConferenceYearController
     public function index()
     {
         return response()->json(
-            ConferenceYear::with('users')->get()->map(function ($year) {
+            ConferenceYear::with(['users', 'subpages'])->get()->map(function ($year) {
                 $arr = $year->toArray();
                 $arr['editors'] = $year->users;
                 unset($arr['users']);
+                $arr['pages'] = $year->subpages;
+                unset($arr['subpages']);
                 return $arr;
             })
         );

@@ -13,7 +13,7 @@ onMounted(() => {
     <h3>Konferencie</h3>
     <ul>
       <li v-for="conf in conferenceStore.conferences" :key="conf.id">
-        <router-link :to="`/conference/${conf.id}`" class="conf-link">
+        <router-link :to="`/conference/${conf.year}`" class="conf-link">
           {{ conf.year }}
         </router-link>
       </li>
