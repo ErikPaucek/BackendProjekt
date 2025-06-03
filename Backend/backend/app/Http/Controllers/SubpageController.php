@@ -34,7 +34,10 @@ class SubpageController
             return response()->json(['message' => 'Podstránka s týmto názvom už existuje v tomto ročníku.'], 422);
         }
 
-        $slug = Str::slug($validated['title']);
+        $yearModel = ConferenceYear::find($validated['year_id']);
+        $yearNumber = $yearModel ? $yearModel->year : '';
+
+        $slug = Str::slug($validated['title'] . '-' . $yearNumber);
         $originalSlug = $slug;
         $i = 2;
         while (Subpage::where('year_id', $validated['year_id'])->where('slug', $slug)->exists()) {
@@ -83,8 +86,10 @@ class SubpageController
             return response()->json(['message' => 'Podstránka s týmto názvom už existuje v tomto ročníku.'], 422);
         }
 
-        if ($subpage->title !== $validated['title']) {
-            $slug = Str::slug($validated['title']);
+        if ($subpage->title !== $validated['title'] || $subpage->year_id !== $validated['year_id']) {
+            $yearModel = ConferenceYear::find($validated['year_id']);
+            $yearNumber = $yearModel ? $yearModel->year : '';
+            $slug = Str::slug($validated['title'] . '-' . $yearNumber);
             $originalSlug = $slug;
             $i = 2;
             while (Subpage::where('year_id', $validated['year_id'])->where('slug', $slug)->where('id', '!=', $subpage->id)->exists()) {
