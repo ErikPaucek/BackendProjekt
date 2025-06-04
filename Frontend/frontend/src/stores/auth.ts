@@ -7,8 +7,8 @@ export const useAuthStore = defineStore('auth', {
     token: null as string | null,
   }),
   actions: {
-    async login(email: string, password: string) {
-      const response = await api.post('/login', { email, password })
+    async login(email: string, password: string, recaptcha: string) {
+      const response = await api.post('/login', { email, password, recaptcha })
       this.token = response.data.token
       this.user = response.data.user
       if (this.token) {

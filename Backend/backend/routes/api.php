@@ -1,6 +1,5 @@
 <?php
 
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -31,6 +30,7 @@ Route::middleware(['auth:sanctum', 'role:editor'])->group(function () {
     Route::get('/editordashboard-data', function () {
         return response()->json(['message' => 'Editor dashboard data']);
     });
+    Route::post('/change-password', [UserController::class, 'changePassword']);
 });
 
 Route::middleware(['auth:sanctum', 'role:editor,admin'])->group(function () {
@@ -43,7 +43,6 @@ Route::middleware(['auth:sanctum', 'role:editor,admin'])->group(function () {
 Route::get('/years', [ConferenceYearController::class, 'index']);
 Route::get('/years/{conferenceYear}', [ConferenceYearController::class, 'show']);
 Route::get('/subpages', [SubpageController::class, 'index']);
-
 
 Route::get('/subpages/slug/{year}/{slug}', [SubpageController::class, 'showBySlugAndYear']);
 Route::get('/subpages/{subpage}', [SubpageController::class, 'show']);
