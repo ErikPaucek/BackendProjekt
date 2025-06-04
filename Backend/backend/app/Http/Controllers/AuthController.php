@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController
 {
@@ -18,18 +19,53 @@ class AuthController
         $user = User::where('email', $request->email)->first();
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+                'email' => ['Poskytnuté prihlasovacie údaje sú nesprávne.'],
             ]);
         }
 
-        $user->tokens()->delete();
+        $code = random_int(100000, 999999);
+        $user->two_factor_code = $code;
+        $user->two_factor_expires_at = now()->addMinutes(5);
+        $user->save();
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        Mail::raw("Your 2FA code is: $code", function ($message) use ($user) {
+            $message->to($user->email)
+                    ->subject('Your 2FA Code');
+        });
 
         return response()->json([
-            'token' => $token,
-            'user' => $user,
+            '2fa_required' => true,
+            'user_id' => $user->id,
         ]);
+    }
+
+    public function verify2fa(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'code' => 'required|string',
+        ]);
+
+        $user = User::find($request->user_id);
+
+        if (
+            $user->two_factor_code === $request->code &&
+            $user->two_factor_expires_at &&
+            now()->lt($user->two_factor_expires_at)
+        ) {
+            $user->two_factor_code = null;
+            $user->two_factor_expires_at = null;
+            $user->save();
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'token' => $token,
+                'user' => $user,
+            ]);
+        }
+
+        return response()->json(['message' => 'Invalid or expired code'], 401);
     }
 
     public function logout(Request $request)

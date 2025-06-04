@@ -7,13 +7,24 @@ export const useAuthStore = defineStore('auth', {
     token: null as string | null,
   }),
   actions: {
-    async login(email: string, password: string, recaptcha: string) {
-      const response = await api.post('/login', { email, password, recaptcha })
-      this.token = response.data.token
-      this.user = response.data.user
-      if (this.token) {
-        localStorage.setItem('token', this.token)
+    async login(email: string, password: string) {
+      const response = await api.post('/login', { email, password })
+      if (response.data.token) {
+        this.token = response.data.token
+        this.user = response.data.user
+        if (this.token) {
+          localStorage.setItem('token', this.token)
+        }
         api.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
+      }
+      return response.data
+    },
+    setTokenAndUser(token: string, user: { id: number; email: string; role: string }) {
+      this.token = token
+      this.user = user
+      if (token) {
+        localStorage.setItem('token', token)
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`
       }
     },
     async logout() {
