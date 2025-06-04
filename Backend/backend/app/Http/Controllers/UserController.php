@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UserCreatedMail;
+use App\Mail\UserPasswordChangedMail;
+use App\Mail\UserDeletedMail;
 
 class UserController
 {
@@ -16,6 +20,7 @@ class UserController
         }
         return response()->json(User::all());
     }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -23,10 +28,15 @@ class UserController
             'password' => 'required|string|min:6',
             'role' => 'required|in:admin,editor',
         ]);
+        $plainPassword = $validated['password'];
         $validated['password'] = Hash::make($validated['password']);
         $user = User::create($validated);
+
+        Mail::to($user->email)->send(new UserCreatedMail($user, $plainPassword));
+
         return response()->json($user, 201);
     }
+
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
@@ -35,13 +45,20 @@ class UserController
             'role' => 'sometimes|in:admin,editor',
         ]);
         if (isset($validated['password'])) {
+            $plainPassword = $validated['password'];
             $validated['password'] = Hash::make($validated['password']);
+            $user->update($validated);
+
+            Mail::to($user->email)->send(new UserPasswordChangedMail($user, $plainPassword));
+        } else {
+            $user->update($validated);
         }
-        $user->update($validated);
         return response()->json($user);
     }
+
     public function destroy(User $user)
     {
+        Mail::to($user->email)->send(new UserDeletedMail($user));
         $user->delete();
         return response()->json(null, 204);
     }

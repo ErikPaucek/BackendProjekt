@@ -132,42 +132,42 @@ export default {
       this.editPageTitle = ''
     },
     async addUser() {
-      if (!this.newUser.email || !this.newUser.password || !this.newUser.role) {
-        alert('Vyplň všetky polia.')
-        return
-      }
-      if (this.newUser.password.length < 6) {
-        alert('Heslo musí mať aspoň 6 znakov.')
-        return
-      }
-      try {
-        await api.post('/users', this.newUser)
-        this.newUser = { email: '', password: '', role: '' }
-        await this.loadUsers()
-        alert('Používateľ bol vytvorený.')
-      } catch (e) {
-        if (e.response && e.response.status === 422) {
-          const errors = e.response.data.errors
-          if (errors) {
-            if (errors.email && errors.email[0].includes('unique')) {
-              alert('Používateľ s týmto emailom už existuje.')
-            } else if (errors.email) {
-              alert(errors.email[0])
-            } else if (errors.password) {
-              alert(errors.password[0])
-            } else if (errors.role) {
-              alert(errors.role[0])
-            } else {
-              alert('Údaje nie sú platné.')
-            }
-          } else {
-            alert('Údaje nie sú platné.')
-          }
+  if (!this.newUser.email || !this.newUser.password || !this.newUser.role) {
+    alert('Vyplň všetky polia.')
+    return
+  }
+  if (this.newUser.password.length < 6) {
+    alert('Heslo musí mať aspoň 6 znakov.')
+    return
+  }
+  try {
+    const response = await api.post('/users', this.newUser)
+    this.users.push(response.data) // okamžite pridaj do zoznamu
+    this.newUser = { email: '', password: '', role: '' }
+    alert('Používateľ bol vytvorený.')
+  } catch (e) {
+    if (e.response && e.response.status === 422) {
+      const errors = e.response.data.errors
+      if (errors) {
+        if (errors.email && errors.email[0].includes('unique')) {
+          alert('Používateľ s týmto emailom už existuje.')
+        } else if (errors.email) {
+          alert(errors.email[0])
+        } else if (errors.password) {
+          alert(errors.password[0])
+        } else if (errors.role) {
+          alert(errors.role[0])
         } else {
-          alert('Chyba pri vytváraní používateľa.')
+          alert('Údaje nie sú platné.')
         }
+      } else {
+        alert('Údaje nie sú platné.')
       }
-    },
+    } else {
+      alert('Chyba pri vytváraní používateľa.')
+    }
+  }
+},
   
     startEditUser(user) {
       this.editUserId = user.id
