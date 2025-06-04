@@ -28,9 +28,9 @@ class AuthController
         $user->two_factor_expires_at = now()->addMinutes(5);
         $user->save();
 
-        Mail::raw("Your 2FA code is: $code", function ($message) use ($user) {
-            $message->to($user->email)
-                    ->subject('Your 2FA Code');
+        Mail::send('emails.two_factor_code', ['code' => $code], function ($message) use ($user) {
+        $message->to($user->email)
+            ->subject('Váš 2FA kód');
         });
 
         return response()->json([
